@@ -39,6 +39,7 @@ def publish_to_mqtt():
         client.publish(f"{TOPIC}/name", info["name"], retain=True)
         client.publish(f"{TOPIC}/level", info["level"], retain=True)
         client.publish(f"{TOPIC}/is_charging", info["is_charging"], retain=True)
+        client.publish(f"{TOPIC}/hours_remaining", info["hours_remaining"], retain=True)
         client.publish(f"{TOPIC}/STATE", json.dumps(info), retain=True)
         print(f"Published.. {info}")
         time.sleep(60)

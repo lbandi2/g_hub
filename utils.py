@@ -19,13 +19,17 @@ def download_file(url, filename):
     try:
         counter = 1
         while True:
+            print(url)
             file = requests.get(url)
             if "G703" in file.content.decode(encoding="utf-8"):
                 with open(f'./data/{filename}', "wb") as f:
                     f.write(file.content)
                 break
             else:
-                url = url[:-1] + str(counter)
+                if counter > 9:
+                    url = url[:-2] + str(counter)
+                else:
+                    url = url[:-1] + str(counter)
                 counter += 1
                 pass
     except:

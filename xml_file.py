@@ -23,6 +23,7 @@ def parse_file(filename):
         battery["last_update"] = datetime.strftime(datetime.now(), "%m/%d/%Y %H:%M:%S")
         battery["name"] = xml_file_root[1].text
         battery["is_charging"] = xml_file_root[5].text
+        battery["hours_remaining"] = int(float(xml_file_root[4].text))
         battery["level"] = int(xml_file_root[3].text.split(".")[0])
 
     except FileNotFoundError:
@@ -31,6 +32,7 @@ def parse_file(filename):
         battery["last_update"] = datetime.strftime(datetime.now(), "%m/%d/%Y %H:%M:%S")
         battery["name"] = "-"
         battery["is_charging"] = "-"
+        battery["hours_remaining"] = "-"
         battery["level"] = "-"
 
     return battery
