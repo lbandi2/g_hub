@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__)) + '/'
-FILENAME = "g_hub_settings.json"
-FILE_PATH = DIR_PATH + FILENAME
 DEVICE = "logitech_g703"
 MQTT_BROKER = os.getenv('MQTT_BROKER')
 MQTT_USER = os.getenv('MQTT_USER')
