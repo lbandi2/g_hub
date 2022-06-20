@@ -1,16 +1,15 @@
 import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
 from datetime import datetime
 import os
 from dotenv import load_dotenv
-from utils import download_file
+from utils import download_file, download_html
 
 load_dotenv()
 
 HOST = os.getenv('HOST_IP')
-URL1 = f"http://{HOST}:12321/device/dev00000001"
-URL2 = f"http://{HOST}:12321/device/5D2C3B20"
+URL = f"http://{HOST}:12321"
 FILENAME1 = "logitech1.xml"
-FILENAME2 = "logitech2.xml"
 
 def parse_file(filename):
     battery = dict()
@@ -37,8 +36,18 @@ def parse_file(filename):
 
     return battery
 
+def get_device_id(filename):
+    with open(f"./data/{filename}") as html:
+        html_content = BeautifulSoup(html, 'html.parser')
+    links = html_content.find_all('a')
+    for index, item in enumerate(links):
+        if index == 3:
+            return item.get('href')
+
 def battery_info():
-    download_file(URL1, FILENAME1)
+    download_html(URL + '/devices', "devices.html")
+    device_id = get_device_id("devices.html")
+    download_file(URL + device_id, FILENAME1)
     info = parse_file(f'./data/{FILENAME1}')
     return info
 

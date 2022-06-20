@@ -2,7 +2,7 @@ import os
 import time
 import paho.mqtt.client as mqtt
 import json
-from xml_file import battery_info
+from html_file import battery_info
 from dotenv import load_dotenv
 
 load_dotenv()
