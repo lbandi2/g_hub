@@ -2,7 +2,7 @@ import os
 import time
 import paho.mqtt.client as mqtt
 import json
-from html_file import battery_info
+from db_query import battery_info
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -27,20 +27,19 @@ def publish_to_mqtt():
     client.will_set(LWT_TOPIC, payload="Offline", qos=0, retain=True)
     client.on_connect = mqtt_on_connect
     client.username_pw_set(username=MQTT_USER, password=MQTT_PASS)
-    client.connect(MQTT_BROKER, keepalive=300)
+    client.connect(MQTT_BROKER, keepalive=60)
     while True:
         info = battery_info()
         client.loop_start()
         client.publish(f"{TOPIC}/error", info["error"], retain=True)
         client.publish(f"{TOPIC}/timestamp", info["timestamp"], retain=True)
         client.publish(f"{TOPIC}/last_update", info["last_update"], retain=True)
-        client.publish(f"{TOPIC}/name", info["name"], retain=True)
         client.publish(f"{TOPIC}/level", info["level"], retain=True)
         client.publish(f"{TOPIC}/is_charging", info["is_charging"], retain=True)
         client.publish(f"{TOPIC}/hours_remaining", info["hours_remaining"], retain=True)
         client.publish(f"{TOPIC}/STATE", json.dumps(info), retain=True)
         print(f"Published.. {info}")
-        time.sleep(60)
+        time.sleep(30)
         client.loop_stop()
 
 
