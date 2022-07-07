@@ -73,6 +73,7 @@ def parse_data(json_data):
     else:
         raise Exception("No data returned from DB query.")
     battery_info['used_method'] = used_method
+    battery_info['last_refresh'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     if not file_exist(LGHUB_FILES):
         error_msg = 'LGHUB is not installed'

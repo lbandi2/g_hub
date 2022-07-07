@@ -34,6 +34,7 @@ def publish_to_mqtt():
         client.publish(f"{TOPIC}/error", info["error"], retain=True)
         client.publish(f"{TOPIC}/timestamp", info["timestamp"], retain=True)
         client.publish(f"{TOPIC}/last_update", info["last_update"], retain=True)
+        client.publish(f"{TOPIC}/last_refresh", info["last_refresh"], retain=True)
         client.publish(f"{TOPIC}/level", info["level"], retain=True)
         client.publish(f"{TOPIC}/is_charging", info["is_charging"], retain=True)
         client.publish(f"{TOPIC}/hours_remaining", info["hours_remaining"], retain=True)
