@@ -1,1 +1,0 @@
-Start-Process -FilePath "C:\Users\sergi\AppData\Local\Programs\Python\Python310\pythonw.exe" -ArgumentList '"C:\Users\sergi\Desktop\Projects\g_hub\main.py"' | ForEach-Object { Write-Host $_; $_} | Set-Content .\fileLog.txt

@@ -1,7 +1,6 @@
 import os
 import requests
 import psutil
-import time
 import json
 import datetime
 import csv
@@ -27,43 +26,47 @@ def file_from_path(path):
     filename = path.split('\\')[-1]
     return filename
 
+# def check_process(path):
+#     filename = file_from_path(path)
+#     pids = psutil.pids()
+#     for item in pids:
+#         p = psutil.Process(item)
+#         if filename.lower() in p.name().lower():
+#             return True
+#     return False
+
 def check_process(path):
     filename = file_from_path(path)
-    pids = psutil.pids()
-    for item in pids:
-        p = psutil.Process(item)
-        if filename.lower() in p.name().lower():
-            return True
-    return False
+    return filename in (p.name() for p in psutil.process_iter())
 
-def get_process_ids(name):
-    ids = []
-    for item in psutil.pids():
-        p = psutil.Process(item)
-        if name.lower() in p.name().lower():
-            ids.append(p.pid)
-    if ids != []:
-        return ids
-    return None
+# def get_process_ids(name):
+#     ids = []
+#     for item in psutil.pids():
+#         p = psutil.Process(item)
+#         if name.lower() in p.name().lower():
+#             ids.append(p.pid)
+#     if ids != []:
+#         return ids
+#     return None
 
-def kill_process(name, wait=3):
-    pids = get_process_ids(name)
-    if pids is not None:
-        for pid in pids:
-            p = psutil.Process(pid)
-            p.terminate()
-            print(f"Process {p.name()} killed")
-            time.sleep(wait)
-    else:
-        print("Process not found")
+# def kill_process(name, wait=3):
+#     pids = get_process_ids(name)
+#     if pids is not None:
+#         for pid in pids:
+#             p = psutil.Process(pid)
+#             p.terminate()
+#             print(f"Process {p.name()} killed")
+#             time.sleep(wait)
+#     else:
+#         print("Process not found")
 
-def run_process(path, kill_previous=True, wait=0):
-    path = sanitize_path(path)
-    filename = file_from_path(path)
-    if kill_previous:
-        kill_process(filename)
-    os.startfile(path)
-    time.sleep(wait)
+# def run_process(path, kill_previous=True, wait=0):
+#     path = sanitize_path(path)
+#     filename = file_from_path(path)
+#     if kill_previous:
+#         kill_process(filename)
+#     os.startfile(path)
+#     time.sleep(wait)
 
 def dir_exist(path):
     return os.path.isdir(path)
@@ -88,23 +91,23 @@ def list_files(dir='data'):
         else:
             return None
 
-def delete_last_file():
-    if dir_exist('data'):
-        filename = list_files()
-        if list_files() is not None:
+def delete_last_file(dir='data'):
+    if dir_exist(dir):
+        filename = list_files(dir)
+        if list_files(dir) is not None:
             if file_exist(filename):
                 os.remove(filename)
 
-def save_file(content):
-    make_dir('data')
-    delete_last_file()
+def save_file(content, dir='data', filename_prefix='last_read'):
+    make_dir(dir)
+    delete_last_file(dir)
     date = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    file_path = f'./data/last_read-{date}.json'
+    file_path = f'./{dir}/{filename_prefix}-{date}.json'
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(content, f, ensure_ascii=False, indent=4)
 
-def load_file():
-    if dir_exist('data'):
+def load_file(dir='data'):
+    if dir_exist(dir):
         if not list_files():
             return False
         else:
