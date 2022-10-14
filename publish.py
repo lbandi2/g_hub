@@ -64,6 +64,7 @@ def publish_to_mqtt():
         client.loop_stop()
     except socket.error:
         print("[ERROR] Reconnecting..")
+        client.loop_stop()
         publish_to_mqtt()
 
 # failed to receive on socket: [WinError 10054] An existing connection was forcibly closed by the remote host

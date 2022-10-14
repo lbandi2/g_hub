@@ -26,47 +26,9 @@ def file_from_path(path):
     filename = path.split('\\')[-1]
     return filename
 
-# def check_process(path):
-#     filename = file_from_path(path)
-#     pids = psutil.pids()
-#     for item in pids:
-#         p = psutil.Process(item)
-#         if filename.lower() in p.name().lower():
-#             return True
-#     return False
-
 def check_process(path):
     filename = file_from_path(path)
     return filename in (p.name() for p in psutil.process_iter())
-
-# def get_process_ids(name):
-#     ids = []
-#     for item in psutil.pids():
-#         p = psutil.Process(item)
-#         if name.lower() in p.name().lower():
-#             ids.append(p.pid)
-#     if ids != []:
-#         return ids
-#     return None
-
-# def kill_process(name, wait=3):
-#     pids = get_process_ids(name)
-#     if pids is not None:
-#         for pid in pids:
-#             p = psutil.Process(pid)
-#             p.terminate()
-#             print(f"Process {p.name()} killed")
-#             time.sleep(wait)
-#     else:
-#         print("Process not found")
-
-# def run_process(path, kill_previous=True, wait=0):
-#     path = sanitize_path(path)
-#     filename = file_from_path(path)
-#     if kill_previous:
-#         kill_process(filename)
-#     os.startfile(path)
-#     time.sleep(wait)
 
 def dir_exist(path):
     return os.path.isdir(path)

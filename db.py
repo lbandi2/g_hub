@@ -42,11 +42,3 @@ class DB:
 
     def is_key_in_data(self):
         return self.key in self.data
-
-    # def format_info(self):
-    #     battery = {}
-
-    # def save_content(self):
-    #     if self.is_key_in_data():
-    #         save_file(self.data)
-

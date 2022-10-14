@@ -24,7 +24,7 @@ class LGHUB:
     def is_running(self):
         return check_process(self.PROCESS)
 
-    def is_valid(func):   #TODO: Fix because if LGHUB is not running it crashes
+    def is_valid(func):
         def wrapper(self):
             if all([self.is_installed, self.is_running]):
                 pass
