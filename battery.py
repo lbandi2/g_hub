@@ -1,8 +1,11 @@
+import logging
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 import math
 
 from utils import load_file, save_file
+
+logger = logging.getLogger()
 
 
 @dataclass
@@ -41,14 +44,27 @@ class BatteryKey(Battery):
 
     def __init__(self, data: dict, method='key') -> None:
         super().__init__(data, method)
+        logger.info(f"Reading battery info from db key: {self.JSON_KEY}")
         self.save_file()
 
     def content(self):
         content = self.read_from_key()
         return content
 
+    # def save_file(self):
+    #     save_file(asdict(self.content()), dir='data', filename_prefix='new_file')
+
+    def is_same_as_file(self, data):
+        json_data = load_file()
+        return json_data == data
+
     def save_file(self):
-        save_file(asdict(self.content()), dir='data', filename_prefix='new_file')
+        new_data = asdict(self.content())
+        if not self.is_same_as_file(new_data):
+            save_file(asdict(self.content()), dir='data', filename_prefix='new_file')
+            logger.debug("Collected info is new, saving json to file")
+        else:
+            logger.debug("Collected info matches the info in json file, not saving")
 
     def read_from_key(self):
         data = self.data[self.json_key]
@@ -81,7 +97,9 @@ class BatteryFile(Battery):
         file = load_file(dir='data')
         if not file:
             content = BatteryInfo()
-            self.error = 'No info from db key nor saved_file'
+            message = 'No info from db key nor json file'
+            logger.warning(message)
+            self.error = message
         else:
             is_charging = file.get('is_charging')
             level = file.get('level')

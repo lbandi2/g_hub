@@ -1,8 +1,11 @@
 import os
 import json
 import sqlite3
+import logging
 
 from utils import file_exist, save_file
+
+logger = logging.getLogger()
 
 
 class DB:
@@ -38,6 +41,7 @@ class DB:
         finally:
             if sqlite_connection:
                 sqlite_connection.close()
+            # logger.info(f"Reading battery info from db key: {self.JSON_KEY}")
             return json_data
 
     def is_key_in_data(self):

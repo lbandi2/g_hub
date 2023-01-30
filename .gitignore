@@ -129,4 +129,7 @@ dmypy.json
 .pyre/
 
 /data
+/logs
 *.xml
+
+*.ignore

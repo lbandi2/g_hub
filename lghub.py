@@ -1,8 +1,12 @@
+import logging
 from dataclasses import asdict
 
-from utils import file_exist, check_process
+from utils import file_exist, check_process, list_files
 from db import DB
 from battery import BatteryKey, BatteryFile
+
+logger = logging.getLogger()
+
 
 class LGHUB:
     LGHUB_FILES = '%PROGRAMFILES%/LGHUB/lghub.exe'
@@ -29,11 +33,13 @@ class LGHUB:
             if all([self.is_installed, self.is_running]):
                 pass
             if not self.is_installed:
-                print("[LGHUB] Program is not installed")
-                self.error = "LGHUB is not installed"
+                message = "LGHUB is not installed"
+                logger.warning(message)
+                self.error = message
             elif not self.is_running:
-                print("[LGHUB] Program is not running")
-                self.error = "LGHUB is not running"
+                message = "LGHUB is not running"
+                logger.warning(message)
+                self.error = message
             return func(self)
         return wrapper
 
@@ -47,16 +53,25 @@ class LGHUB:
 
     def read_battery(self):
         if self.method == 'key':
-            return BatteryKey(self.get_data())
+            info = BatteryKey(self.get_data())
+            # logger.info(f"Reading battery info from db key: {info.json_key}")
+            return info
         elif self.method == 'saved json_file':
-            return BatteryFile(self.get_data())
+            info = BatteryFile(self.get_data())
+            file = list_files().split('/')[-1]
+            logger.info(f"DB key {info.json_key} not found")
+            logger.info(f"Reading battery info from json file: {file}")
+            return info
         else:
-            raise ValueError("[LGHUB] No method was specified")
+            message = "[LGHUB] No method was specified for reading the battery info"
+            logger.critical(message)
+            raise ValueError(message)
 
     def data_to_publish(self):
         battery = self.read_battery()
         data = asdict(battery.content())
         data['last_refresh'] = battery.last_refresh
         data['error'] = battery.error if battery.error else self.error
-        data['used_method'] = "key: battery/g703hero/percentage" if self.method == 'key' else 'saved json_file'
+        # data['used_method'] = "key: battery/g703hero/percentage" if self.method == 'key' else 'saved json_file'
+        data['used_method'] = f"key: {battery.json_key}" if self.method == 'key' else 'saved json_file'
         return data
