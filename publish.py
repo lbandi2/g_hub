@@ -23,31 +23,36 @@ def mqtt_on_connect(client, userdata, flags, rc):
         logger.info("Connected to MQTT broker")
     else:
         logger.error("Failed to connect to MQTT broker")
-        # raise ConnectionError("Failed to connect to broker")
 
-# def mqtt_on_disconnect(client, userdata, rc=0):
 def mqtt_on_disconnect(client, userdata, rc):
     logger.warning("Disconnected from MQTT broker, trying to reconnect", str(rc))
-    # print("Disconnected result code "+str(rc))
-    # client.loop_stop()
     if rc != 0:
         logger.warning("Disconnected from MQTT broker, trying to reconnect", str(rc))
-        # print(f"Unexpected MQTT disconnection with code {str(rc)}. Will auto-reconnect")
 
 def publish_to_mqtt(broker, user, password):
-    # LWT = f"tele/{device_name}/LWT"
-    # TOPIC = f"stat/{device_name}"
     client = mqtt.Client(DEVICE)
     client.username_pw_set(username=user, password=password)
     client.will_set(LWT_TOPIC, payload="Offline", qos=0, retain=True)
     client.on_connect = mqtt_on_connect
     client.on_disconnect = mqtt_on_disconnect
 
+    # while not client.is_connected():
+    #     client.connect_async(broker, keepalive=60)
+    #     client.loop_start()
+    #     logger.info(f"Trying to connect to broker at {broker}")
+    #     time.sleep(15)
+
     while not client.is_connected():
-        client.connect_async(broker, keepalive=60)
-        client.loop_start()
-        logger.info(f"Trying to connect to broker at {broker}")
-        time.sleep(15)
+        try:
+            client.connect_async(broker, keepalive=60)
+        except ConnectionRefusedError: # broker is unavailable
+            time.sleep(120)
+        except OSError:                # broker is not reachable
+            time.sleep(600)
+        else:
+            client.loop_start()
+            logger.info(f"Trying to connect to broker at {broker}")
+            time.sleep(15)
 
     try:
         while True:
@@ -80,5 +85,3 @@ def publish_to_mqtt(broker, user, password):
         publish_to_mqtt()
     except Exception as e:
         logger.critical("Program crashed with error", exc_info=True)
-
-# failed to receive on socket: [WinError 10054] An existing connection was forcibly closed by the remote host
