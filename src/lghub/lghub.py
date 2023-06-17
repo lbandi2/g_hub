@@ -2,8 +2,8 @@ import logging
 from dataclasses import asdict
 
 from utils import file_exist, check_process, list_files
-from db import DB
-from battery import BatteryKey, BatteryFile
+from src.db.db import DB
+from src.battery.battery import BatteryKey, BatteryFile
 
 logger = logging.getLogger()
 
@@ -31,6 +31,8 @@ class LGHUB:
     def is_valid(func):
         def wrapper(self):
             if all([self.is_installed, self.is_running]):
+                # message = "LGHUB is installed and running"
+                # logger.debug(message)
                 pass
             if not self.is_installed:
                 message = "LGHUB is not installed"
@@ -53,9 +55,9 @@ class LGHUB:
 
     def read_battery(self):
         if self.method == 'key':
-            info = BatteryKey(self.get_data())
-            # logger.info(f"Reading battery info from db key: {info.json_key}")
-            return info
+            # info = BatteryKey(self.get_data())
+            # return info
+            return BatteryKey(self.get_data())
         elif self.method == 'saved json_file':
             info = BatteryFile(self.get_data())
             file = list_files().split('/')[-1]
@@ -72,6 +74,5 @@ class LGHUB:
         data = asdict(battery.content())
         data['last_refresh'] = battery.last_refresh
         data['error'] = battery.error if battery.error else self.error
-        # data['used_method'] = "key: battery/g703hero/percentage" if self.method == 'key' else 'saved json_file'
         data['used_method'] = f"key: {battery.json_key}" if self.method == 'key' else 'saved json_file'
         return data

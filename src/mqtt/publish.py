@@ -6,7 +6,7 @@ import socket
 import logging
 from dotenv import load_dotenv
 
-from lghub import LGHUB
+from src.lghub.lghub import LGHUB
 
 logger = logging.getLogger()
 
@@ -29,7 +29,7 @@ def mqtt_on_disconnect(client, userdata, rc):
     if rc != 0:
         logger.warning("Disconnected from MQTT broker, trying to reconnect", str(rc))
 
-def publish_to_mqtt(broker, user, password):
+def publish_to_mqtt(broker, user, password, wait):
     client = mqtt.Client(DEVICE)
     client.username_pw_set(username=user, password=password)
     client.will_set(LWT_TOPIC, payload="Offline", qos=0, retain=True)
@@ -73,15 +73,16 @@ def publish_to_mqtt(broker, user, password):
                 client.publish(f"{TOPIC}/last_refresh", info["last_refresh"], retain=True)
                 client.publish(f"{TOPIC}/STATE", json.dumps(info), retain=True)
                 logger.debug(f"Published {info}")
-                time.sleep(30)
+                time.sleep(wait * 60)
     except KeyboardInterrupt:
         logger.warning("Aborted from keyboard")
-        client.loop_stop()
-        logger.info("Exiting main program")
+        # client.loop_stop()
     except socket.error:
         logger.warning("Connection interrupted by Windows, reconnecting")
-        client.loop_stop()
-        logger.info("Exiting main program")
+        # client.loop_stop()
         publish_to_mqtt()
     except Exception as e:
         logger.critical("Program crashed with error", exc_info=True)
+    finally:
+        client.loop_stop()
+        logger.info("Exiting main program")

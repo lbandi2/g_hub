@@ -3,7 +3,7 @@ import json
 import sqlite3
 import logging
 
-from utils import file_exist, save_file
+from utils import file_exist
 
 logger = logging.getLogger()
 
@@ -22,6 +22,7 @@ class DB:
             if file_exist(self.file_path):
                 return func(self)
             else:
+                logger.error(f"DB file not found: '{self.file_path}'")
                 raise ValueError(f"[DB] File not found: '{self.file_path}'")
         return wrapper
 

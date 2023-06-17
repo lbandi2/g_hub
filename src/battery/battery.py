@@ -51,9 +51,6 @@ class BatteryKey(Battery):
         content = self.read_from_key()
         return content
 
-    # def save_file(self):
-    #     save_file(asdict(self.content()), dir='data', filename_prefix='new_file')
-
     def is_same_as_file(self, data):
         json_data = load_file()
         return json_data == data

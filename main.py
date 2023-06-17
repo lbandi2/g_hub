@@ -2,9 +2,9 @@ import logging
 import atexit
 import os
 
-from runsingle import runSingle
-from publish import publish_to_mqtt
-from logger import set_logger
+from src.runsingle.runsingle import runSingle
+from src.mqtt.publish import publish_to_mqtt
+from src.logger.logger import set_logger
 
 ## Needs LGHUB from Logitech installed and running
 
@@ -28,7 +28,8 @@ def main():
     atexit.register(log_program_exit)
     publish_to_mqtt(broker=os.getenv('MQTT_BROKER'), 
                     user=os.getenv('MQTT_USER'), 
-                    password=os.getenv('MQTT_PASS'))
+                    password=os.getenv('MQTT_PASS'),
+                    wait=1)
 
 if __name__ == '__main__':
     main()
